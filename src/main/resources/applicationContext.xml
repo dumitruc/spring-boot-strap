@@ -9,5 +9,5 @@
 
 
 
-    <bean name="dima" class="com.dumitruc.training.ws.Person" scope="singleton"/>
+    <bean name="dima" class="com.dumitruc.training.ws.Person" factory-method="getInstance"/>
 </beans>

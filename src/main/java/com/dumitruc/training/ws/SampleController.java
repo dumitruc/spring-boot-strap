@@ -25,12 +25,13 @@ public class SampleController {
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @ResponseBody
-    String postHome(@RequestBody String name) {
-        System.out.println(name+" posted something!");
+    String postHome(@RequestBody Person newPerson) {
 
-        dima.setName(name);
+        System.out.println("newPerson.getName() = " + newPerson.getName());
+        dima = newPerson;
         System.out.println("WS dima = " + dima);
-        return String.format("Hello %s!",name);
+
+        return String.format("Hello %s!",dima.getName());
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)

@@ -1,11 +1,13 @@
 package com.dumitruc.training.ws;
 
 import ch.qos.logback.core.spi.ContextAware;
+import ch.qos.logback.core.util.FileUtil;
 import com.jayway.restassured.response.Response;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.*;
 import cucumber.api.PendingException;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
@@ -23,13 +25,17 @@ import static com.jayway.restassured.RestAssured.*;
  * To change this template use File | Settings | File Templates.
  */
 
+import com.dumitruc.training.ws.Person;
+
+import java.io.File;
+
 @ContextConfiguration(locations = {"classpath*:cucumber.xml"})
 public class StepDefHello {
 
     ApplicationContext springApplicationContext;
 
-    @Autowired
-    private Person dima;
+    //    @Autowired
+    private Person dima = Person.getInstance();
 
     private final static String DEST_URL = "http://localhost:8080";
 
@@ -42,8 +48,12 @@ public class StepDefHello {
 
     @Given("^is valid against the schema xsd file name$")
     public void is_valid_against_the_schema_xsd_file_name() throws Throwable {
-        Response restResponse = given().body("Vasea").post(DEST_URL);
-        restResponse.getBody();
+        ClassLoader classLoader = getClass().getClassLoader();
+        Response restResponse = given()
+                .contentType("application/json")
+                .body(FileUtils.readFileToString(new File(classLoader.getResource("dima-person.json").getFile())))
+                .post(DEST_URL);
+        restResponse.getBody().peek();
     }
 
     @When("^I set the order quantity to order quantity in the XML$")
@@ -57,18 +67,25 @@ public class StepDefHello {
 
     @Then("^the schema validation accepts the input as type$")
     public void the_schema_validation_accepts_the_input_as_type() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
+
+        System.out.println("================Trying out the XML part");
+        ClassLoader classLoader = getClass().getClassLoader();
+        Response restResponse = given()
+                .contentType("application/xhtml+xml")
+                .body(FileUtils.readFileToString(new File(classLoader.getResource("dima-person.xml").getFile())))
+                .post(DEST_URL);
+        restResponse.getBody().peek();
 
     }
 
     @Before
-    public void setup(){
+    public void setup() {
         springApplicationContext = SpringApplication.run(SampleController.class);
     }
 
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         SpringApplication.exit(springApplicationContext, new ExitCodeGenerator() {
             @Override
             public int getExitCode() {

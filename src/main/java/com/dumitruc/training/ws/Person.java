@@ -12,6 +12,15 @@ import org.springframework.stereotype.Component;
 */
 public class Person {
 
+    private static Person INSTANCE = null;
+
+    public static synchronized Person getInstance() {
+        if(INSTANCE == null)
+            return new Person();
+        return INSTANCE;
+    }
+
+
     public String getAge() {
         return age;
     }
